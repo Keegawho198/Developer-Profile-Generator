@@ -4,13 +4,15 @@ const axios = require("axios");
 const inquirer = require("inquirer");
 //need to npm install the above(eg; npm install axios)
 
+
+
 inquirer
 .prompt({
     message: "Enter your GitHub username:",
     name: "username"
 })
 .then(function ({ username }) {
-    const queryUrl = `https://api.github.com/users/${username}/repos?per_page=100`;
+    const queryUrl = `https://api.github.com/users/${username}`;
 
     axios.get(queryUrl).then(function (res) {
         const repoNames = res.data.map(function (repo) {
