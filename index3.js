@@ -8,32 +8,35 @@ const writeFileAsync = util.promisify(fs.writeFile);
 
 
 async function getGitUser() {
-try {
-const { username } = await inquirer.prompt({
-    message: "Write your GutHub Username",
-    name: "username"
-});
+  try {
+    const { username } = await inquirer.prompt({
+      type: "input",
+      message: "Write your GutHub Username",
+      name: "username"
+    });
 
-const { data } = await axios.get(
-    `https://api.github.com/users/${username}`,
-    // `https://api.github.com/users/${username}/starred`
-);
+    const { data } = await axios.get(
+      `https://api.github.com/users/${username}`,
+      // `https://api.github.com/users/${username}/starred`
+    );
 
-// const { dataStarred } = await axios.get(
-//     `https://api.github.com/users/${username}/starred`
-// );
+    // const { dataStarred } = await axios.get(
+    //     `https://api.github.com/users/${username}/starred`
+    // );
 
-console.log(data);
-console.log("Number of Public repositories: " + data.public_repos);
-// console.log(dataStarred.name);
-
-} catch (err) {
-console.log(err);
+    console.log("Number of Public repositories: " + data.public_repos);
+    const html = generateHTML(username,data);
+    await writeFileAsync("index.html", html);
+    
+  } catch (err) {
+    console.log(err);
+  }
 }
-}
 
-function generateHTML(answers) {
-    return `
+function generateHTML(username,data) {
+  console.log(data);
+  console.log(username);
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,23 +50,13 @@ function generateHTML(answers) {
   <div class="container">
     <h3>Example heading <span class="badge badge-secondary">Contact Me</span></h3>
     <ul class="list-group">
-      <li class="list-group-item">My GitHub username is ${answers.username}</li>
+      <li class="list-group-item">My GitHub username is ${username}</li>
+      <li class="list-group-item">My GitHub username is ${data.bio}</li>
     </ul>
   </div>
 </div>
 </body>
-</html>`;
+</html>`
 }
 
 getGitUser()
-    .then(function(answers){
-        const html = generateHTML(answers);
-
-        return writeFileAsync("index.html", html);
-    })
-    .then(function () {
-        console.log("Successfully wrote to index.html");
-    })
-    .catch(function (err) {
-        console.log(err);
-    })
