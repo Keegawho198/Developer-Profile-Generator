@@ -27,16 +27,27 @@ async function getGitUser() {
     console.log("Number of Public repositories: " + data.public_repos);
     const html = generateHTML(username,data);
     await writeFileAsync("index.html", html);
-    // await writeFileAsync("index.pdf", pdf);
+    console.log("index.html written");
+
+    const pdf = generatePDF(username,data);
+    await writeFileAsync("index.pdf", pdf);
+    console.log("PDF file created");
     
   } catch (err) {
     console.log(err);
   }
 }
 
+function generatePDF(username,data) {
+  return `
+  Username: ${username}
+  Bio: ${data.bio}
+  `
+}
+
 function generateHTML(username,data) {
-  console.log(data);
-  console.log(username);
+  //console.log(data);
+  //console.log(username);
   return `
 <!DOCTYPE html>
 <html lang="en">
