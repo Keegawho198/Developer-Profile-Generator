@@ -15,16 +15,23 @@ async function getGitUser() {
       name: "username"
     });
 
+    const { colorRes } = await inquirer.prompt({
+      type: "list",
+      message: "Pick a color" ,
+      name: "colorRes",
+      choices: ["Yellow","Blue","Red","Green"]
+    })
+
     const { data } = await axios.get(
       `https://api.github.com/users/${username}`,
       // `https://api.github.com/users/${username}/starred`
     );
 
-    const { dataStarred } = await axios.get(
+    const dataStarred = await axios.get(
         `https://api.github.com/users/${username}/starred`
     );
-    console.log(dataStarred);
-    const html = generateHTML(username,data,dataStarred);
+    //console.log(dataStarred);
+    const html = generateHTML(username,data,dataStarred,colorRes);
     await writeFileAsync("index.html", html);
     console.log("index.html written");
 
@@ -35,6 +42,19 @@ async function getGitUser() {
   } catch (err) {
     console.log(err);
   }
+}
+
+const colorCss = {
+  Yellow: {
+    container: "#fff8b6"
+  }, Blue:{
+    container:"#7ac6df"
+  }, Red: {
+    container: "#d73e3e"
+  },Green: {
+    container: "#3ed74e"
+  }
+
 }
 
 function generatePDF(username,data) {
@@ -50,10 +70,11 @@ function generatePDF(username,data) {
   `
 }
 
-function generateHTML(username,data,dataStarred) {
+function generateHTML(username,data,dataStarred,colorRes) {
+  //console.log(colorRes)
   //console.log(data);
   //console.log(username);       <li class="list-group-item">Number of starred ${dataStarred.length}</li>      
-  console.log(dataStarred)
+  //console.log(dataStarred)
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -62,6 +83,15 @@ function generateHTML(username,data,dataStarred) {
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <title>Document</title>
+  <style>
+  .container{
+    background-color: ${colorCss[colorRes].container};
+  }
+  .jumbotron-fluid{
+    background-color: ${colorCss[colorRes].container};
+  }
+
+</style>
 </head>
 <body>
   <div class="jumbotron jumbotron-fluid">
@@ -69,7 +99,7 @@ function generateHTML(username,data,dataStarred) {
     <h3>Example heading <span class="badge badge-secondary">Contact Me</span></h3>
     <ul class="list-group">
     <img src= ${data.avatar_url} style="height: 300px; width: 300px;>
-      <li class="list-group-item">My GitHub username is ${username}</li>
+      <li class="list-group-item">My GitHub username is ${username} ${colorRes.colorPallet}</li>
       <li class="list-group-item">My Location is ${data.location}</li>
       <li class="list-group-item">My GitHub URL is ${data.html_url}</li>
       <li class="list-group-item">My GitHub Bio is ${data.bio}</li>
