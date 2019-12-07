@@ -10,4 +10,4 @@ using node js to run this
 
 After Installing npm and enter your username for github, your details will be displayed, along with a color that a user has chosen.
 
-![Screenshot](screenshot.JPG)
+![Screenshot](Screenshot.JPG)
